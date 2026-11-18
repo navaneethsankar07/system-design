@@ -1,0 +1,44 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    ports:
+      - "8000:8000"
+
+    cpus: 1.0
+    mem_limit: 512m
+
+    restart: unless-stopped
+
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health/', timeout=2)"
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  k6:
+    image: grafana/k6:0.55.0
+
+    profiles:
+      - loadtest
+
+    volumes:
+      - ./load-tests:/scripts:ro
+
+    environment:
+      BASE_URL: http://app:8000
+      ENDPOINT: /api/work/
+      ITERATIONS: "1000000"
+
+    depends_on:
+      app:
+        condition: service_healthy
+
+    command: run /scripts/scaling.js

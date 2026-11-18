@@ -49,3 +49,32 @@ Results and observations will be documented here.
 ## Key Learnings
 
 To be updated after completing the experiments.
+
+## Implementation Details
+
+### Application
+
+A Django application exposing four endpoints:
+
+- `/api/health/`
+- `/api/info/`
+- `/api/light/`
+- `/api/work/`
+
+### Containerization
+
+Docker is used to package the application.
+Docker Compose manages the application and load generator.
+
+### Traffic Generation
+
+k6 is used to simulate concurrent requests.
+
+### Monitoring
+
+Docker Stats is used to observe container CPU
+and memory utilization.
+
+## Results
+
+See [Baseline Experiment](results/baseline.md).
