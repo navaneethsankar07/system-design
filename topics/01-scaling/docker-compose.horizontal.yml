@@ -1,0 +1,67 @@
+
+services:
+  app1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: scaling-app:local
+    cpus: 1.0
+    mem_limit: 512m
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health/', timeout=2)"
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  app2:
+    image: scaling-app:local
+    cpus: 1.0
+    mem_limit: 512m
+    restart: unless-stopped
+    depends_on:
+      app1:
+        condition: service_started
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health/', timeout=2)"
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8000:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      app1:
+        condition: service_healthy
+      app2:
+        condition: service_healthy
+    restart: unless-stopped
+
+  k6:
+    image: grafana/k6:0.55.0
+    profiles:
+      - loadtest
+    volumes:
+      - ./load-tests:/scripts:ro
+    environment:
+      BASE_URL: http://nginx
+      ENDPOINT: /api/work/
+      ITERATIONS: "1000000"
+    depends_on:
+      nginx:
+        condition: service_started
+    command: run /scripts/scaling.js
