@@ -1,8 +1,39 @@
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "django-insecure-4pcsam6++1(_d6k)w@-duj5ap#utc*ox#t95g*42ief0dryq^i"
+
+def _load_env(env_path: Path) -> None:
+    if not env_path.is_file():
+        return
+    with open(env_path, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            if "=" in line:
+                key, value = line.split("=", 1)
+                key = key.strip()
+                value = value.strip()
+                if (value.startswith('"') and value.endswith('"')) or (
+                    value.startswith("'") and value.endswith("'")
+                ):
+                    value = value[1:-1]
+                os.environ.setdefault(key, value)
+
+
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv(BASE_DIR / ".env")
+except ImportError:
+    pass
+
+for path in [BASE_DIR / ".env", BASE_DIR.parent / ".env"]:
+    _load_env(path)
+
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 DEBUG = True
 
