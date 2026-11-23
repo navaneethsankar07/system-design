@@ -50,7 +50,7 @@ Client
 - [x] Phase 2 — Round Robin
 - [X] Phase 3 — Weighted Round Robin
 - [x] Phase 4 — Least Connections
-- [ ] Phase 5 — IP Hash
+- [x] Phase 5 — IP Hash
 - [ ] Phase 6 — Hash and Consistent Hashing
 - [ ] Phase 7 — Least Response Time
 - [ ] Phase 8 — Random and Power of Two Choices
