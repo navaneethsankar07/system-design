@@ -49,7 +49,7 @@ Client
 - [x] Phase 1 — Backend foundation
 - [x] Phase 2 — Round Robin
 - [X] Phase 3 — Weighted Round Robin
-- [ ] Phase 4 — Least Connections
+- [x] Phase 4 — Least Connections
 - [ ] Phase 5 — IP Hash
 - [ ] Phase 6 — Hash and Consistent Hashing
 - [ ] Phase 7 — Least Response Time
