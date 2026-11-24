@@ -1,102 +1,115 @@
 # Load Balancing
 
-A hands-on project to understand, implement, and compare load-balancing algorithms using Docker, Flask, Nginx, and k6.
+A hands-on project to understand, implement, and evaluate different load-balancing algorithms using Docker, Flask, Nginx, and k6.
 
 ## Objectives
 
-- Understand how a load balancer distributes traffic.
-- Implement and experiment with different load-balancing algorithms.
-- Observe request distribution across backend instances.
-- Simulate different backend processing times and capacities.
-- Test backend failures and recovery.
-- Compare algorithms using load-test results.
+- Understand how load balancers distribute incoming traffic.
+- Implement different load-balancing algorithms.
+- Analyze request distribution across backend instances.
+- Experiment with different backend capacities and processing times.
+- Simulate backend failures and recovery.
+- Compare algorithm performance using load-testing results.
 
-## Architecture (Phase 1)
+## Architecture
 
-Currently, three backend instances are running independently. A load balancer has not been added yet.
+The project consists of three Flask backend instances behind an Nginx load balancer.
 
 ```text
-Client
-  |
-  | Direct requests (for testing)
-  |
-  +------ Backend 1 (5001)
-  +------ Backend 2 (5002)
-  +------ Backend 3 (5003)
+                  Client
+                    |
+                    v
+              Nginx Load Balancer
+                    |
+          +---------+---------+
+          |         |         |
+          v         v         v
+       Backend 1 Backend 2 Backend 3
+        :5000     :5000     :5000
 ```
 
 ## Technology Stack
 
-- Python
-- Flask
-- Gunicorn
-- Docker
-- Docker Compose
-- Nginx (planned)
-- k6 (planned)
+- **Backend:** Python, Flask, Gunicorn
+- **Containerization:** Docker, Docker Compose
+- **Load Balancer:** Nginx
+- **Load Testing:** k6
 
 ## Backend Endpoints
 
-| Endpoint | Purpose |
+| Endpoint | Description |
 |---|---|
 | `/` | Basic application response |
 | `/health` | Backend health check |
-| `/info` | Instance identification |
-| `/work?delay=2` | Simulates processing delay |
+| `/info` | Returns backend instance information |
+| `/work?delay=2` | Simulates processing delays |
 
-## Project Phases
+## Load Balancing Algorithms
 
-- [x] Phase 1 — Backend foundation
-- [x] Phase 2 — Round Robin
-- [X] Phase 3 — Weighted Round Robin
-- [x] Phase 4 — Least Connections
-- [x] Phase 5 — IP Hash
-- [ ] Phase 6 — Hash and Consistent Hashing
-- [ ] Phase 7 — Least Response Time
-- [ ] Phase 8 — Random and Power of Two Choices
-- [ ] Phase 9 — Failure Handling
-- [ ] Phase 10 — Benchmark and Comparison
+- [x] Round Robin
+- [x] Weighted Round Robin
+- [x] Least Connections
+- [x] Weighted Least Connections
+- [x] IP Hash
+- [x] Consistent Hashing
+- [x] Least Response Time Experiment
+- [x] Random
+- [x] Power of Two Choices
+- [x] Failure Handling
+- [x] Benchmark and Comparison
 
 ## Running the Project
 
-Start the backend instances:
+**Start the backend and load balancer:**
 
 ```bash
 docker compose up -d --build
 ```
 
-Check status:
+**Check running containers:**
 
 ```bash
 docker compose ps
 ```
 
-Test the backend:
+**Test the load balancer:**
 
 ```bash
-curl http://localhost:5001/info
-curl http://localhost:5002/info
-curl http://localhost:5003/info
+curl http://localhost:8000/info
 ```
 
-Stop the project:
+**Check backend health:**
+
+```bash
+curl http://localhost:5001/health
+curl http://localhost:5002/health
+curl http://localhost:5003/health
+```
+
+**Stop the project:**
 
 ```bash
 docker compose down
 ```
 
-## Experiments
+## Experiment Results
 
-Benchmark results and observations will be documented under `results/` as each experiment is completed.
+Each experiment includes its configuration, test methodology, actual results, observations, and conclusion.
 
-## Status
+| Experiment | Results |
+|---|---|
+| Round Robin | [View Results](results/round-robin.md) |
+| Weighted Round Robin | [View Results](results/weighted-round-robin.md) |
+| Least Connections | [View Results](results/least-connections.md) |
+| Weighted Least Connections | [View Results](results/weighted-least-connections.md) |
+| IP Hash | [View Results](results/ip-hash.md) |
+| Consistent Hashing | [View Results](results/consistent-hashing.md) |
+| Least Response Time | [View Results](results/least-response-time.md) |
+| Random | [View Results](results/random.md) |
+| Power of Two Choices | [View Results](results/power-of-two.md) |
+| Failure Handling | [View Results](results/failure-handling.md) |
+| Benchmark Comparison | [View Results](results/benchmark-comparison.md) |
 
-Phase 5 completed once all three instances are running and verified independently.
+## Project Status
 
-## Results
-
-- [Round Robin](results/round-robin.md)
-- [Weighted Round Robin](results/weighted-round-robin.md)
-- [Least Connections](results/least-connections.md)
-- [Weighted Least Connections](results/weighted-least-connections.md)
-- [IP Hash](results/ip-hash.md)
+The implementation and experimentation phases are documented in the `results/` directory. Benchmark findings and observations are based on the workloads and configurations tested.
