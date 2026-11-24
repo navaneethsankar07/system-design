@@ -91,4 +91,12 @@ Benchmark results and observations will be documented under `results/` as each e
 
 ## Status
 
-Phase 1 completed once all three instances are running and verified independently.
+Phase 5 completed once all three instances are running and verified independently.
+
+## Results
+
+- [Round Robin](results/round-robin.md)
+- [Weighted Round Robin](results/weighted-round-robin.md)
+- [Least Connections](results/least-connections.md)
+- [Weighted Least Connections](results/weighted-least-connections.md)
+- [IP Hash](results/ip-hash.md)
