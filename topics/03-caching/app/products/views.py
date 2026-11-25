@@ -3,7 +3,7 @@ import json
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 
-from .cache import redis_client
+from .cache import CACHE_TTL, redis_client
 from .models import Product
 
 
@@ -12,8 +12,10 @@ def product_detail(request, product_id):
 
     cached_product = redis_client.get(cache_key)
 
-    if cached_product:
-        return JsonResponse(json.loads(cached_product))
+    if cached_product is not None:
+        response = JsonResponse(json.loads(cached_product))
+        response["X-Cache"] = "HIT"
+        return response
 
     product = get_object_or_404(Product, id=product_id)
 
@@ -25,6 +27,13 @@ def product_detail(request, product_id):
         "stock": product.stock,
     }
 
-    redis_client.set(cache_key, json.dumps(product_data))
+    redis_client.setex(
+        cache_key,
+        CACHE_TTL,
+        json.dumps(product_data),
+    )
 
-    return JsonResponse(product_data)
+    response = JsonResponse(product_data)
+    response["X-Cache"] = "MISS"
+
+    return response
