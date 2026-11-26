@@ -1,0 +1,16 @@
+import http from "k6/http";
+import { check } from "k6";
+
+export const options = {
+  vus: 20,
+  duration: "30s",
+};
+
+export default function () {
+  const response = http.get("http://localhost:8000/products/1/");
+
+  check(response, {
+    "status is 200": (r) => r.status === 200,
+    "cache hit": (r) => r.headers["X-Cache"] === "HIT",
+  });
+}

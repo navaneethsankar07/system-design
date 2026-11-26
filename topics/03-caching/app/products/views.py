@@ -17,6 +17,18 @@ TTL_JITTER = int(os.getenv("CACHE_TTL_JITTER", 30))
 
 
 def product_detail(request, product_id):
+
+    if request.GET.get("cache") == "off":
+        redis_client.incr("metrics:product_db_loads")
+        product = get_object_or_404(Product, id=product_id)
+
+        return JsonResponse({
+        "id": product.id,
+        "name": product.name,
+        "description": product.description,
+        "price": str(product.price),
+        "stock": product.stock,
+    })
     cache_key = f"product:{product_id}"
 
     cached_product = redis_client.get(cache_key)
@@ -34,6 +46,7 @@ def product_detail(request, product_id):
         response["X-Cache"] = "HIT"
         return response
     try:
+        redis_client.incr("metrics:product_db_loads")
         product = Product.objects.get(id=product_id)
     except Product.DoesNotExist:
         redis_client.setex(
