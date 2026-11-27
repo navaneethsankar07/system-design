@@ -1,0 +1,4 @@
+This file is served directly by the Nginx edge server.
+
+It represents a static asset such as an image, stylesheet,
+JavaScript file, or downloadable resource.
